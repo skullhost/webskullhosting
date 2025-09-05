@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>STORESKULLHOST — Beranda</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="brand">STORESKULLHOST</div>
+    <nav>
+      <a href="index.html">Beranda</a>
+      <a href="#cart" id="link-cart">Keranjang (<span id="cart-count">0</span>)</a>
+      <a href="#history" id="link-history">History</a>
+      <a href="admin.html" class="admin-link">Admin</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section id="home" class="page">
+      <h1>Semua Produk</h1>
+      <div id="products" class="products-grid"></div>
+    </section>
+
+    <section id="cart" class="page" style="display:none">
+      <h1>Keranjang</h1>
+      <div id="cart-list"></div>
+      <div class="cart-actions">
+        <button id="clear-cart" class="btn secondary">Kosongkan Keranjang</button>
+        <button id="checkout" class="btn primary">Checkout</button>
+      </div>
+    </section>
+
+    <section id="history" class="page" style="display:none">
+      <h1>History Pesanan</h1>
+      <div id="history-list"></div>
+      <small class="muted">History ter-filter berdasarkan username & nomor WhatsApp yang terakhir Anda gunakan saat checkout / buy.</small>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div>©2025 SKULLHOSTING — STORESKULLHOST</div>
+  </footer>
+
+  <!-- Modal for Buy / Checkout -->
+  <div id="modal" class="modal" style="display:none">
+    <div class="modal-content">
+      <h3 id="modal-title">Informasi Pembeli</h3>
+      <label>Username</label>
+      <input id="modal-username" placeholder="Nama / username" />
+      <label>Nomor WhatsApp</label>
+      <input id="modal-phone" placeholder="62xxxxxxxxxx" />
+      <div class="modal-actions">
+        <button id="modal-cancel" class="btn secondary">Batal</button>
+        <button id="modal-submit" class="btn primary">Selesai</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="store.js"></script>
+  <script>
+    /* --- USER-SIDE LOGIC --- */
+    const productsEl = document.getElementById('products');
+    const cartCountEl = document.getElementById('cart-count');
+    const cartListEl = document.getElementById('cart-list');
+    const historyListEl = document.getElementById('history-list');
+
+    const pages = {
+      home: document.getElementById('home'),
+      cart: document.getElementById('cart'),
+      history: document.getElementById('history')
+    };
+
+    function showPage(name){
+      Object.values(pages).forEach(p => p.style.display='none');
+      pages[name].style.display='block';
+    }
+
+    // Router (hash)
+    function route(){
+      const h = location.hash.replace('#','');
+      if(!h) showPage('home');
+      else if(h === 'cart') showPage('cart');
+      else if(h === 'history') showPage('history');
+      else showPage('home');
+      refreshAll();
+    }
+    window.addEventListener('hashchange', route);
+    route();
+
+    // Render products
+    function renderProducts(){
+      const products = Store.getProducts();
+      productsEl.innerHTML = '';
+      if(products.length === 0){
+        productsEl.innerHTML = '<div class="empty">Belum ada produk. Admin harus menambahkan produk terlebih dahulu.</div>';
+        return;
+      }
+      products.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'card product-card';
+        card.innerHTML = `
+          <div class="product-img" style="background-image:url('${p.image || 'https://via.placeholder.com/300x180?text=NO+IMAGE'}')"></div>
+          <div class="card-body">
+            <h3>${p.title}</h3>
+            <p class="price">Rp ${numberWithCommas(p.price)}</p>
+            <p class="desc">${p.description || ''}</p>
+            <div class="product-actions">
+              <button class="btn primary buy-btn" data-id="${p.id}">Buy</button>
+              <button class="btn secondary cart-btn" data-id="${p.id}">Keranjang</button>
+            </div>
+          </div>
+        `;
+        productsEl.appendChild(card);
+      });
+
+      // attach events
+      document.querySelectorAll('.cart-btn').forEach(b=>{
+        b.addEventListener('click', e=>{
+          const id = e.currentTarget.dataset.id;
+          Store.addToCart(id);
+          refreshCartCount();
+          alert('Produk ditambahkan ke keranjang.');
+        });
+      });
+
+      document.querySelectorAll('.buy-btn').forEach(b=>{
+        b.addEventListener('click', e=>{
+          const id = e.currentTarget.dataset.id;
+          openModal({type:'buy', productId: id});
+        });
+      });
+    }
+
+    // Cart UI
+    function renderCart(){
+      const cart = Store.getCart();
+      cartListEl.innerHTML = '';
+      if(cart.length === 0){
+        cartListEl.innerHTML = '<div class="empty">Keranjang kosong.</div>';
+        return;
+      }
+      cart.forEach(item => {
+        const p = Store.getProduct(item.productId);
+        const el = document.createElement('div');
+        el.className = 'cart-item';
+        el.innerHTML = `
+          <div class="cart-left">
+            <div class="mini-img" style="background-image:url('${p.image || 'https://via.placeholder.com/80'}')"></div>
+            <div>
+              <strong>${p.title}</strong>
+              <div class="muted">Rp ${numberWithCommas(p.price)} x ${item.qty}</div>
+            </div>
+          </div>
+          <div class="cart-right">
+            <button class="btn danger remove-cart" data-id="${item.productId}">Hapus</button>
+          </div>
+        `;
+        cartListEl.appendChild(el);
+      });
+
+      document.querySelectorAll('.remove-cart').forEach(b=>{
+        b.addEventListener('click', e=>{
+          Store.removeFromCart(e.currentTarget.dataset.id);
+          renderCart();
+          refreshCartCount();
+        });
+      });
+    }
+
+    // History UI (filter by stored session user)
+    function renderHistory(){
+      const user = sessionStorage.getItem('store_last_user');
+      historyListEl.innerHTML = '';
+      if(!user){
+        historyListEl.innerHTML = '<div class="empty">Belum ada pembelian. Gunakan tombol Buy atau Checkout untuk membuat pesanan.</div>';
+        return;
+      }
+      const u = JSON.parse(user); // {username, phone}
+      const orders = Store.getOrders().filter(o => o.username === u.username && o.phone === u.phone);
+      if(orders.length === 0) {
+        historyListEl.innerHTML = '<div class="empty">Belum ada pesanan untuk username/nomor ini.</div>';
+        return;
+      }
+      orders.sort((a,b)=>b.createdAt - a.createdAt);
+      orders.forEach(o=>{
+        const p = Store.getProduct(o.productId) || {title:'(produk dihapus)'};
+        const el = document.createElement('div');
+        el.className = 'order-card';
+        el.innerHTML = `
+          <div><strong>${p.title}</strong></div>
+          <div class="muted">User: ${o.username} — WA: ${o.phone}</div>
+          <div class="muted">Tanggal: ${new Date(o.createdAt).toLocaleString()}</div>
+          <div>Status: <span class="status ${o.status}">${o.status.toUpperCase()}</span></div>
+        `;
+        historyListEl.appendChild(el);
+      });
+    }
+
+    // Modal logic
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalUsername = document.getElementById('modal-username');
+    const modalPhone = document.getElementById('modal-phone');
+    const modalCancel = document.getElementById('modal-cancel');
+    const modalSubmit = document.getElementById('modal-submit');
+    let modalContext = null;
+
+    function openModal(ctx){
+      modalContext = ctx; // {type: 'buy'|'checkout', productId?, cartItems?}
+      modalTitle.textContent = ctx.type === 'buy' ? 'Pembelian Produk' : 'Checkout Keranjang';
+      // load last used
+      const last = sessionStorage.getItem('store_last_user');
+      if(last){
+        const u = JSON.parse(last);
+        modalUsername.value = u.username;
+        modalPhone.value = u.phone;
+      } else { modalUsername.value=''; modalPhone.value=''; }
+      modal.style.display = 'flex';
+    }
+    function closeModal(){ modal.style.display='none'; modalContext=null; }
+
+    modalCancel.addEventListener('click', ()=> closeModal());
+    modalSubmit.addEventListener('click', ()=>{
+      const username = modalUsername.value.trim();
+      const phone = modalPhone.value.trim();
+      if(!username || !phone){ alert('Isi username dan nomor WhatsApp.'); return; }
+
+      // save last session
+      sessionStorage.setItem('store_last_user', JSON.stringify({username, phone}));
+
+      if(modalContext.type === 'buy'){
+        // single product purchase
+        Store.createOrder({
+          productId: modalContext.productId,
+          username, phone
+        });
+        alert('Pesanan terkirim. Admin akan menghubungi via WhatsApp.');
+      } else if(modalContext.type === 'checkout'){
+        const cart = Store.getCart();
+        cart.forEach(item=>{
+          Store.createOrder({
+            productId: item.productId,
+            username, phone,
+            qty: item.qty
+          });
+        });
+        Store.clearCart();
+        alert('Checkout selesai. Admin akan menghubungi via WhatsApp.');
+      }
+      closeModal();
+      refreshAll();
+      location.hash = '#history';
+    });
+
+    // cart actions
+    document.getElementById('checkout').addEventListener('click', ()=>{
+      const cart = Store.getCart();
+      if(cart.length === 0){ alert('Keranjang kosong.'); return; }
+      openModal({type:'checkout'});
+    });
+    document.getElementById('clear-cart').addEventListener('click', ()=>{
+      if(confirm('Kosongkan keranjang?')) { Store.clearCart(); refreshAll(); }
+    });
+
+    // helpers
+    function refreshCartCount(){ cartCountEl.textContent = Store.getCartQty(); }
+    function refreshAll(){
+      renderProducts();
+      renderCart();
+      renderHistory();
+      refreshCartCount();
+    }
+
+    // storage event -> realtime update
+    window.addEventListener('storage', e=>{
+      // update UI when orders/products/cart changed in other tab (admin actions)
+      if(e.key && ['store_products','store_orders','store_cart'].includes(e.key)){
+        refreshAll();
+      }
+    });
+
+    // number format
+    function numberWithCommas(x){
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // initialize
+    refreshAll();
+  </script>
+</body>
+</html>
