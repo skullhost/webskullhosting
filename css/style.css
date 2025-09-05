@@ -1,38 +1,145 @@
-:root{
-  --bg:#071022; --card:#0b1220; --muted:#9aa4b2; --accent:#7c5cff; --accent-2:#3dd1b8;
-  --glass: rgba(255,255,255,0.03); --radius:12px; --max-w:1100px; --text:#e6eef8;
+/* ========== RESET & BASE ========== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-*{box-sizing:border-box}
-body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--text);background:linear-gradient(180deg,#04111b 0%, #071422 70%);}
-.container{max-width:var(--max-w);margin:28px auto;padding:16px}
-.navbar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-bottom:1px solid rgba(255,255,255,0.03);backdrop-filter: blur(6px);}
-.navbar .brand{font-weight:700;letter-spacing:1px;font-size:18px;color:var(--accent)}
-.navbar nav a{color:var(--muted);margin-left:14px;text-decoration:none}
-.navbar nav a:hover{color:var(--text)}
-.footer{padding:18px;text-align:center;color:var(--muted);margin-top:30px}
-.panel{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 20px rgba(2,6,23,0.6);margin-bottom:20px}
-.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px}
-.card{background:var(--glass);border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
-.product-card .product-img{height:150px;background-size:cover;background-position:center}
-.card-body{padding:12px}
-.price{color:var(--accent-2);font-weight:700;margin:6px 0}
-.product-actions{display:flex;gap:8px;margin-top:8px}
-.btn{padding:8px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:600;background:transparent;color:var(--text)}
-.btn.primary{background:linear-gradient(90deg,var(--accent), #5a3bff);color:white}
-.btn.secondary{background:rgba(255,255,255,0.03);color:var(--muted)}
-.btn.danger{background:#ff6b6b}
-.btn.warning{background:#ffb74d}
-.btn.success{background:#2ecc71}
-.muted{color:var(--muted);font-size:13px}
-.empty{padding:20px;text-align:center;color:var(--muted)}
-.cart-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px dashed rgba(255,255,255,0.02)}
-.cart-left{display:flex;gap:12px;align-items:center}
-.mini-img{width:60px;height:44px;background-size:cover;background-position:center;border-radius:8px}
-.form-actions{display:flex;gap:10px;margin-top:8px;justify-content:flex-end}
-.admin-product{display:flex;align-items:center;gap:12px;padding:8px;border-bottom:1px solid rgba(255,255,255,0.02)}
-.admin-product img{width:80px;height:60px;object-fit:cover;border-radius:8px}
-.order-card,.order-item{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.01));padding:12px;border-radius:10px;margin-bottom:8px}
-.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,23,0.6)}
-.modal-content{width:320px;background:var(--card);padding:18px;border-radius:12px}
-.modal-content input,.modal-content textarea{width:100%;padding:8px;margin:6px 0;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text)}
-@media (max-width:700px){.navbar nav a{display:none}.products-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}.container{padding:12px}}
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  line-height: 1.6;
+  background: #f6f6f6;
+  color: #222;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ========== NAVBAR ========== */
+nav {
+  position: sticky;
+  top: 0;
+  background: linear-gradient(90deg, #111, #444);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 99;
+}
+nav h1 {
+  color: #fff;
+  font-size: 1.3rem;
+  letter-spacing: 1px;
+}
+nav a {
+  color: #ddd;
+  margin-left: 1rem;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.3s;
+}
+nav a:hover, nav a.active {
+  color: #00e676; /* aksen hijau */
+}
+
+/* ========== MAIN ========== */
+main {
+  flex: 1;
+  width: 90%;
+  max-width: 1200px;
+  margin: 1.5rem auto;
+}
+
+/* ========== GRID PRODUK ========== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.2rem;
+}
+.grid div {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+.grid div:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+.grid div img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+.grid div h3 {
+  margin: 0.5rem 0 0.25rem;
+  padding: 0 0.75rem;
+  font-size: 1rem;
+}
+.grid div p {
+  padding: 0 0.75rem;
+  font-size: 0.9rem;
+  color: #555;
+}
+.grid div button {
+  margin: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: #00e676;
+  border: none;
+  color: #fff;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.grid div button:hover {
+  background: #00c853;
+}
+
+/* ========== FORM (CART & ADMIN) ========== */
+input, textarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  margin: 0.4rem 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+button {
+  background: #111;
+  color: #fff;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button:hover {
+  background: #333;
+}
+
+/* ========== ORDERS / HISTORY ========== */
+#order-history div, #admin-orders div {
+  background: #fff;
+  margin: 0.4rem 0;
+  padding: 0.6rem 0.75rem;
+  border-left: 4px solid #00e676;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* ========== FOOTER ========== */
+footer {
+  text-align: center;
+  padding: 1rem 0;
+  background: #111;
+  color: #aaa;
+  font-size: 0.85rem;
+}
+
+/* ========== RESPONSIVE NAV ========== */
+@media (max-width: 600px) {
+  nav h1 { font-size: 1rem; }
+  nav a { margin-left: 0.6rem; font-size: 0.85rem; }
+  .grid div img { height: 140px; }
+}
