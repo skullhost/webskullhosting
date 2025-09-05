@@ -1,39 +1,47 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin | StoreSkullHost</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <script defer src="js/app.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin – STORESKULLHOST</title>
+  <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
-  <nav>
-    <h1>Admin Dashboard</h1>
-    <a href="admin.html" class="active">Produk & Pesanan</a>
+  <nav class="navbar">
+    <h1>STORESKULLHOST Admin</h1>
   </nav>
 
-  <main>
-    <section>
+  <main class="container">
+    <!-- FORM TAMBAH PRODUK -->
+    <section class="card">
       <h2>Tambah Produk</h2>
-      <input id="p-name" placeholder="Nama Produk">
-      <input id="p-price" placeholder="Harga">
-      <input id="p-img" placeholder="URL Gambar (mis. img/kaos1.jpg)">
-      <textarea id="p-desc" placeholder="Deskripsi"></textarea>
-      <button onclick="addProduct()">Tambah Produk</button>
+      <form id="add-product-form">
+        <input type="text" id="product-name" placeholder="Nama Produk" required />
+        <input type="number" id="product-price" placeholder="Harga" required />
+        <input type="text" id="product-image" placeholder="URL / path gambar (contoh: img/produk1.jpg)" required />
+        <textarea id="product-desc" placeholder="Deskripsi"></textarea>
+        <button type="submit">Tambah Produk</button>
+      </form>
     </section>
 
-    <section>
+    <!-- DAFTAR PRODUK -->
+    <section class="card">
       <h2>Daftar Produk</h2>
       <div id="admin-products"></div>
     </section>
 
-    <section>
+    <!-- KELOLA PESANAN -->
+    <section class="card">
       <h2>Kelola Pesanan</h2>
       <div id="admin-orders"></div>
     </section>
   </main>
 
-  <footer>@2025 SKULLHOSTING</footer>
+  <footer class="footer">
+    &copy; 2025 STORESKULLHOST
+  </footer>
+
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
