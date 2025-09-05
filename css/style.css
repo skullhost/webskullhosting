@@ -143,3 +143,63 @@ footer {
   nav a { margin-left: 0.6rem; font-size: 0.85rem; }
   .grid div img { height: 140px; }
 }
+
+/* ====== ADMIN ====== */
+#admin-products, #admin-orders {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* CARD PRODUK */
+.product-card {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.product-card img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-right: 1rem;
+}
+.product-card h4 { margin: 0 0 4px; }
+.product-card button {
+  margin-right: 0.4rem;
+  background: #333;
+  color: #fff;
+  border: none;
+  padding: 0.4rem 0.7rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.product-card button:hover { background: #555; }
+
+/* CARD PESANAN */
+.order-card {
+  background: #fff;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.order-card h4 { margin: 0 0 4px; }
+.order-card button {
+  margin-right: 0.4rem;
+  background: #00e676;
+  color: #fff;
+  border: none;
+  padding: 0.4rem 0.7rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.order-card button:nth-child(2) { background: #f44336; }
+.order-card button:hover { opacity: 0.9; }
+
