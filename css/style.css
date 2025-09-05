@@ -1,167 +1,68 @@
-/* ===== RESET & GLOBAL ===== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-body {
-  font-family: Arial, sans-serif;
-  background: #f9f9f9;
-  color: #333;
-  line-height: 1.5;
-}
-a { color: inherit; text-decoration: none; }
+/* RESET */
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
 
-/* ===== NAVBAR ===== */
+/* NAVBAR */
 .navbar {
-  background: #222;
+  background: linear-gradient(90deg, #222, #444);
   color: #fff;
-  padding: 0.8rem 1.2rem;
-  font-size: 1.2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.8rem 1.5rem;
 }
-.navbar h1 {
-  font-size: 1.4rem;
-  letter-spacing: 1px;
-}
+.navbar h1 { font-size: 1.4rem; }
 .navbar a {
-  color: #fff;
-  margin-left: 1rem;
-  font-weight: 500;
-  transition: color 0.3s;
+  color: #fff; margin-left: 1rem; text-decoration: none;
+  transition: color 0.2s;
 }
-.navbar a:hover { color: #00e676; }
+.navbar a:hover { color: #ffcc00; }
 
-/* ===== LAYOUT ===== */
-.container {
-  max-width: 900px;
-  margin: auto;
-  padding: 1rem;
-}
-.card {
-  background: #fff;
-  padding: 1rem;
-  margin-top: 1rem;
-  border-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-.card h2 {
-  margin-top: 0;
-  font-size: 1.3rem;
-  margin-bottom: 0.6rem;
-}
-.footer {
-  text-align: center;
-  padding: 1rem;
-  margin-top: 1rem;
-  color: #666;
-}
+/* CONTAINER */
+.container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
 
-/* ===== FORM ===== */
-form input,
-form textarea {
-  width: 100%;
-  margin: 0.4rem 0;
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-form textarea {
-  resize: vertical;
-  min-height: 60px;
-}
-form button {
-  padding: 0.5rem 1rem;
-  background: #333;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: background 0.3s;
-}
-form button:hover {
-  background: #555;
-}
-
-/* ===== GRID & CARD WRAPPERS ===== */
-#admin-products, #admin-orders {
-  display: grid;
+/* PRODUCT GRID */
+#user-products, #admin-products {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
-  margin-top: 1rem;
 }
-
-/* ===== CARD PRODUK ===== */
 .product-card {
-  display: flex;
-  align-items: center;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background: #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  background: #fff; border: 1px solid #ddd; border-radius: 6px;
+  display: flex; flex-direction: column; overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
-.product-card img {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 4px;
-  margin-right: 1rem;
+.product-card img { width: 100%; height: 160px; object-fit: cover; }
+.product-info { padding: 0.8rem; }
+.product-info h4 { margin-bottom: 0.4rem; }
+.product-info p { font-weight: bold; margin-bottom: 0.6rem; }
+.product-info button {
+  margin-right: 0.4rem; margin-bottom: 0.4rem;
+  padding: 0.4rem 0.7rem; border: none; border-radius: 4px; cursor: pointer;
 }
-.product-card .product-info { flex: 1; }
-.product-card h4 { margin: 0 0 4px; font-size: 1.1rem; }
-.product-card p { margin: 0 0 6px; color: #666; }
-.product-card button {
-  margin-right: 0.4rem;
-  padding: 0.4rem 0.7rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  background: #333;
-  color: #fff;
-  transition: background 0.3s;
-}
-.product-card button:hover { background: #555; }
+.product-info button:hover { opacity: 0.85; }
+.product-info button:first-of-type { background: #008cba; color: #fff; }
+.product-info button:last-of-type { background: #28a745; color: #fff; }
 
-/* ===== CARD PESANAN ===== */
-.order-card {
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background: #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+/* ADMIN */
+.admin-section { margin-bottom: 2rem; }
+.admin-section h2 { margin-bottom: 1rem; }
+.admin-form { display: grid; grid-template-columns: 1fr 1fr 1fr 2fr auto; gap: 0.5rem; margin-bottom: 1rem; }
+.admin-form input, .admin-form textarea {
+  padding: 0.4rem; border: 1px solid #ccc; border-radius: 4px;
 }
-.order-card h4 { margin: 0 0 4px; font-size: 1.1rem; }
-.order-card p { margin: 2px 0; color: #555; }
-.order-card strong { color: #000; }
-.order-card button {
-  margin-top: 0.5rem;
-  margin-right: 0.4rem;
-  padding: 0.4rem 0.7rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: opacity 0.3s;
+.admin-table {
+  width: 100%; border-collapse: collapse;
 }
-.order-card button:first-of-type {
-  background: #00c853;
-  color: #fff;
+.admin-table th, .admin-table td {
+  border: 1px solid #ccc; padding: 0.6rem; text-align: left;
 }
-.order-card button:last-of-type {
-  background: #d32f2f;
-  color: #fff;
+.admin-table th { background: #f5f5f5; }
+.admin-actions button {
+  padding: 0.3rem 0.6rem; margin-right: 0.3rem; border: none; border-radius: 4px; cursor: pointer;
 }
-.order-card button:hover { opacity: 0.85; }
+.admin-actions button.delete { background: #e74c3c; color: #fff; }
+.admin-actions button.edit { background: #f39c12; color: #fff; }
+.admin-actions button.done { background: #28a745; color: #fff; }
+.admin-actions button.cancel { background: #c0392b; color: #fff; }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 600px) {
-  .product-card {
-    flex-direction: column;
-    text-align: center;
-  }
-  .product-card img {
-    margin: 0 0 0.5rem 0;
-  }
+/* FOOTER */
+.footer {
+  margin-top: 3rem; background: #222; color: #bbb; text-align: center; padding: 1rem 0;
 }
