@@ -1,30 +1,31 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Panel - STORESKULLHOST</title>
-  <link rel="stylesheet" href="admin.css">
-  <script type="module" src="admin.js" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel – STORESKULLHOST</title>
+  <link rel="stylesheet" href="admin.css" />
 </head>
 <body>
   <header>
-    <h1>STORESKULLHOST - Admin Panel</h1>
+    <h1>STORESKULLHOST – Admin Panel</h1>
+    <nav>
+      <a href="#" onclick="showSection('products')">Daftar Produk</a>
+      <a href="#" onclick="showSection('orders')">Kelola Pesanan</a>
+    </nav>
   </header>
 
   <main>
-    <section class="add-product">
-      <h2>Tambah Produk</h2>
+    <!-- Produk -->
+    <section id="products-section">
+      <h2>Produk</h2>
       <form id="add-product-form">
-        <input type="text" name="name" placeholder="Nama Produk" required>
-        <input type="number" name="price" placeholder="Harga" required>
-        <input type="text" name="image" placeholder="URL Gambar" required>
-        <textarea name="description" placeholder="Deskripsi"></textarea>
-        <button type="submit">Tambah</button>
+        <input type="text" id="product-name" placeholder="Nama Produk" required />
+        <input type="number" id="product-price" placeholder="Harga" required />
+        <input type="text" id="product-image" placeholder="URL Gambar" required />
+        <input type="text" id="product-description" placeholder="Deskripsi" />
+        <button type="submit">Tambah Produk</button>
       </form>
-    </section>
-
-    <section class="product-list">
-      <h2>Daftar Produk</h2>
       <table>
         <thead>
           <tr>
@@ -39,14 +40,15 @@
       </table>
     </section>
 
-    <section class="order-list">
-      <h2>Kelola Pesanan</h2>
+    <!-- Pesanan -->
+    <section id="orders-section" style="display:none;">
+      <h2>Pesanan</h2>
       <table>
         <thead>
           <tr>
             <th>Username</th>
-            <th>Nomor HP</th>
-            <th>ID Produk</th>
+            <th>Telepon</th>
+            <th>Produk</th>
             <th>Status</th>
             <th>Aksi</th>
           </tr>
@@ -56,8 +58,9 @@
     </section>
   </main>
 
-  <footer>
-    &copy; 2025 STORESKULLHOST
-  </footer>
+  <footer>&copy; 2025 STORESKULLHOST</footer>
+
+  <!-- script di paling bawah supaya DOM sudah siap -->
+  <script type="module" src="admin.js"></script>
 </body>
 </html>
