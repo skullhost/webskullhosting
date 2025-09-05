@@ -1,30 +1,84 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Keranjang | StoreSkullHost</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <script defer src="js/app.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Keranjang - STORESKULLHOST</title>
+  <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
-  <nav>
-    <h1>StoreSkullHost</h1>
-    <a href="index.html">Beranda</a>
-    <a href="cart.html" class="active">Keranjang</a>
-    <a href="history.html">History</a>
+  <nav class="navbar">
+    <h1>STORESKULLHOST</h1>
+    <div>
+      <a href="index.html">Beranda</a>
+      <a href="cart.html">Keranjang</a>
+      <a href="history.html">History</a>
+    </div>
   </nav>
 
-  <main>
-    <h2>Keranjang</h2>
-    <div id="cart-items"></div>
-    <div id="checkout-form">
-      <input id="username" placeholder="Username">
-      <input id="phone" placeholder="Nomor WhatsApp">
-      <button onclick="checkout()">Selesai & Pesan</button>
+  <main class="container">
+    <h2>Keranjang Anda</h2>
+    <div id="cart-box"></div>
+    <div style="margin-top:1rem;">
+      <button onclick="checkoutCart()" style="padding:0.6rem 1rem;background:#28a745;color:#fff;border:none;border-radius:4px;">Checkout</button>
     </div>
   </main>
 
-  <footer>@2025 SKULLHOSTING</footer>
+  <footer class="footer">&copy; 2025 STORESKULLHOST</footer>
+
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
+  <script>
+    const SUPABASE_URL = "https://zvqlsgwccrdqjgcxgmzq.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2cWxzZ3djY3JkcWpnY3hnbXpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwNTc0MDUsImV4cCI6MjA3MjYzMzQwNX0.6Ge1ON_x9Ce-l4tFRtH_Ks9o3v1RouLIDejtbohjo4Y";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function loadCart() {
+      const box = document.getElementById("cart-box");
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      if (cart.length === 0) {
+        box.innerHTML = "<p>Keranjang kosong.</p>";
+        return;
+      }
+      const { data, error } = await supabase.from("products").select("*").in("id", cart);
+      if (error) {
+        console.error(error);
+        box.innerHTML = "<p>Gagal memuat keranjang.</p>";
+        return;
+      }
+      box.innerHTML = data.map(p => `
+        <div class="product-card" style="flex-direction:row;align-items:center;">
+          <img src="${p.image}" alt="${p.name}" style="width:80px;height:80px;">
+          <div style="flex:1;padding:0.5rem;">
+            <h4>${p.name}</h4>
+            <p>Rp${p.price}</p>
+          </div>
+          <button onclick="removeFromCart('${p.id}')">Hapus</button>
+        </div>`).join("");
+    }
+
+    function removeFromCart(id) {
+      let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      cart = cart.filter(item => item !== id);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      loadCart();
+    }
+
+    async function checkoutCart() {
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      if (cart.length === 0) return alert("Keranjang kosong");
+      const username = prompt("Masukkan username:");
+      const phone = prompt("Masukkan nomor WhatsApp:");
+      if (!username || !phone) return;
+
+      for (const pid of cart) {
+        await supabase.from("orders").insert([{ username, phone, product: pid, status: "pending" }]);
+      }
+      localStorage.removeItem("cart");
+      alert("Pesanan terkirim, admin akan menghubungi Anda.");
+      loadCart();
+    }
+
+    document.addEventListener("DOMContentLoaded", loadCart);
+  </script>
 </body>
 </html>
