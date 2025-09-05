@@ -1,0 +1,91 @@
+:root{
+  --bg:#0f1724;
+  --card:#0b1220;
+  --muted:#9aa4b2;
+  --accent:#7c5cff;
+  --accent-2:#3dd1b8;
+  --glass: rgba(255,255,255,0.03);
+  --radius:14px;
+  --max-w:1100px;
+  --text:#e6eef8;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; font-family:Inter, "Segoe UI", Roboto, Arial, sans-serif;
+  background: linear-gradient(180deg,#04111b 0%, #071422 60%);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+.container{max-width:var(--max-w); margin:30px auto; padding:16px}
+
+.navbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 20px; background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-bottom:1px solid rgba(255,255,255,0.03); backdrop-filter: blur(6px);
+}
+.navbar .brand{font-weight:700; letter-spacing:1px; font-size:18px; color:var(--accent)}
+.navbar nav a{color:var(--muted); margin-left:14px; text-decoration:none}
+.navbar nav a:hover{color:var(--text)}
+.navbar.admin{border-bottom:2px solid rgba(124,92,255,0.12)}
+
+.footer{padding:18px; text-align:center; color:var(--muted); margin-top:30px}
+
+h1,h2,h3{margin:0 0 12px 0}
+.panel{background:var(--card); border-radius:12px; padding:18px; box-shadow: 0 6px 20px rgba(2,6,23,0.6); margin-bottom:20px}
+
+.products-grid{
+  display:grid; grid-template-columns: repeat(auto-fill,minmax(240px,1fr)); gap:18px;
+}
+
+.card{background:var(--glass); border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,0.03)}
+.product-card .product-img{height:140px; background-size:cover; background-position:center}
+.card-body{padding:12px}
+.price{color:var(--accent-2); font-weight:700; margin:6px 0}
+.product-actions{display:flex; gap:8px; margin-top:8px}
+.btn{
+  padding:8px 12px; border-radius:10px; border:0; cursor:pointer; font-weight:600;
+  background:transparent; color:var(--text);
+  box-shadow:none;
+}
+.btn.primary{background:linear-gradient(90deg,var(--accent), #5a3bff); color:white}
+.btn.secondary{background:rgba(255,255,255,0.03); color:var(--muted)}
+.btn.danger{background:#ff6b6b}
+.btn.warning{background:#ffb74d}
+.btn.success{background:#2ecc71}
+.muted{color:var(--muted); font-size:13px}
+
+.empty{padding:20px; text-align:center; color:var(--muted)}
+
+/* cart */
+.cart-item{display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px dashed rgba(255,255,255,0.02)}
+.cart-left{display:flex; gap:12px; align-items:center}
+.mini-img{width:60px; height:44px; background-size:cover; background-position:center; border-radius:8px}
+.cart-actions{display:flex; gap:10px; justify-content:flex-end; margin-top:12px}
+
+/* admin product list */
+.admin-product{display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.02)}
+.admin-product-left{display:flex; gap:12px; align-items:center}
+.admin-product-actions button{margin-left:6px}
+
+/* order cards */
+.order-card, .order-item{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.01)); padding:12px; border-radius:10px; margin-bottom:8px}
+.order-left{margin-bottom:8px}
+.order-actions{display:flex; gap:8px}
+
+/* modal */
+.modal{
+  position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+  background:rgba(2,6,23,0.6);
+}
+.modal-content{width:320px; background:var(--card); padding:18px; border-radius:12px}
+.modal-content input, .modal-content textarea{width:100%; padding:8px; margin:6px 0; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:var(--text)}
+
+/* responsive */
+@media (max-width:700px){
+  .navbar nav a{display:none}
+  .products-grid{grid-template-columns: repeat(auto-fill,minmax(180px,1fr))}
+  .container{padding:12px}
+}
