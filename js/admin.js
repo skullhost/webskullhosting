@@ -1,9 +1,8 @@
-// admin.js (tanpa order by created_at)
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
 // === KONFIGURASI SUPABASE ===
 const SUPABASE_URL = "https://zvqlsgwccrdqjgcxgmzq.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2cWxzZ3djY3JkcWpnY3hnbXpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwNTc0MDUsImV4cCI6MjA3MjYzMzQwNX0.6Ge1ON_x9Ce-l4tFRtH_Ks9o3v1RouLIDejtbohjo4Y";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2cWxzZ3djY3JkcWpnY3hnbXpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwNTc0MDUsImV4cCI6MjA3MjYzMzQwNX0.6Ge1ON_x9Ce-l4tFRtH_Ks9o3v1RouLIDejtbohjo4Y"; // gunakan service key kalau mau bypass RLS
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // === ELEMENT DOM ===
@@ -12,18 +11,16 @@ const orderList = document.getElementById("order-list");
 const addProductForm = document.getElementById("add-product-form");
 
 // ========== PRODUK ==========
-
-// Muat semua produk
 async function loadProducts() {
   productList.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
 
   const { data, error } = await supabase.from("products").select("*");
+  console.log("Products:", data, error);
+
   if (error) {
-    console.error("Gagal muat produk:", error);
     productList.innerHTML = "<tr><td colspan='5'>Gagal memuat produk</td></tr>";
     return;
   }
-
   if (!data || data.length === 0) {
     productList.innerHTML = "<tr><td colspan='5'>Belum ada produk</td></tr>";
     return;
@@ -46,7 +43,6 @@ async function loadProducts() {
   });
 }
 
-// Tambah produk
 addProductForm?.addEventListener("submit", async (e) => {
   e.preventDefault();
   const name = e.target.name.value.trim();
@@ -54,13 +50,9 @@ addProductForm?.addEventListener("submit", async (e) => {
   const image = e.target.image.value.trim();
   const description = e.target.description.value.trim();
 
-  const { data, error } = await supabase
-    .from("products")
-    .insert([{ name, price, image, description }])
-    .select();
-
+  const { error } = await supabase.from("products").insert([{ name, price, image, description }]);
   if (error) {
-    alert("Gagal tambah produk!");
+    alert("Gagal tambah produk");
     console.error(error);
   } else {
     alert("Produk berhasil ditambahkan");
@@ -69,9 +61,8 @@ addProductForm?.addEventListener("submit", async (e) => {
   }
 });
 
-// Hapus produk
 async function deleteProduct(id) {
-  if (!confirm("Yakin hapus produk?")) return;
+  if (!confirm("Hapus produk ini?")) return;
   const { error } = await supabase.from("products").delete().eq("id", id);
   if (error) {
     alert("Gagal hapus produk");
@@ -81,7 +72,6 @@ async function deleteProduct(id) {
   }
 }
 
-// Edit produk (pakai prompt sederhana)
 async function editProduct(id) {
   const { data, error } = await supabase.from("products").select("*").eq("id", id).single();
   if (error || !data) {
@@ -97,7 +87,6 @@ async function editProduct(id) {
     .from("products")
     .update({ name: newName, price: newPrice, image: newImage, description: newDesc })
     .eq("id", id);
-
   if (updateError) {
     alert("Gagal update produk");
     console.error(updateError);
@@ -107,20 +96,18 @@ async function editProduct(id) {
 }
 
 // ========== PESANAN ==========
-
-// Muat semua pesanan
 async function loadOrders() {
-  orderList.innerHTML = "<tr><td colspan='6'>Loading...</td></tr>";
+  orderList.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
 
-  const { data, error } = await supabase.from("orders").select("*, products(name)");
+  const { data, error } = await supabase.from("orders").select("*");
+  console.log("Orders:", data, error);
+
   if (error) {
-    console.error("Gagal muat pesanan:", error);
-    orderList.innerHTML = "<tr><td colspan='6'>Gagal memuat pesanan</td></tr>";
+    orderList.innerHTML = "<tr><td colspan='5'>Gagal memuat pesanan</td></tr>";
     return;
   }
-
   if (!data || data.length === 0) {
-    orderList.innerHTML = "<tr><td colspan='6'>Belum ada pesanan</td></tr>";
+    orderList.innerHTML = "<tr><td colspan='5'>Belum ada pesanan</td></tr>";
     return;
   }
 
@@ -130,9 +117,8 @@ async function loadOrders() {
     tr.innerHTML = `
       <td>${order.username}</td>
       <td>${order.phone}</td>
-      <td>${order.products?.name || "-"}</td>
+      <td>${order.product}</td>
       <td>${order.status}</td>
-      <td>${order.created_at ? new Date(order.created_at).toLocaleString() : "-"}</td>
       <td>
         <button onclick="updateStatus('${order.id}', 'done')">Done</button>
         <button onclick="updateStatus('${order.id}', 'canceled')">Batal</button>
@@ -142,7 +128,6 @@ async function loadOrders() {
   });
 }
 
-// Update status pesanan
 async function updateStatus(orderId, newStatus) {
   const { error } = await supabase.from("orders").update({ status: newStatus }).eq("id", orderId);
   if (error) {
