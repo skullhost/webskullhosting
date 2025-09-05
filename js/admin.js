@@ -1,91 +1,165 @@
-const SUPABASE_URL = "https://zvqlsgwccrdqjgcxgmzq.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2cWxzZ3djY3JkcWpnY3hnbXpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwNTc0MDUsImV4cCI6MjA3MjYzMzQwNX0.6Ge1ON_x9Ce-l4tFRtH_Ks9o3v1RouLIDejtbohjo4Y";
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// admin.js
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-async function loadAdminProducts() {
-  const { data, error } = await supabase.from("products").select("*").order("name");
-  const tbody = document.getElementById("admin-products");
-  if (error) { console.error(error); return; }
-  tbody.innerHTML = data.map(p => `
-    <tr>
-      <td>${p.name}</td>
-      <td>Rp${p.price}</td>
-      <td><img src="${p.image}" alt="" style="width:60px;height:60px;"></td>
-      <td>${p.description || ""}</td>
-      <td class="admin-actions">
-        <button class="edit" onclick="editProduct('${p.id}','${p.name}',${p.price},'${p.image}','${p.description||""}')">Edit</button>
-        <button class="delete" onclick="deleteProduct('${p.id}')">Hapus</button>
-      </td>
-    </tr>`).join("");
-}
+// === Konfigurasi Supabase ===
+const SUPABASE_URL = "https://YOUR-PROJECT.supabase.co";
+const SUPABASE_KEY = "YOUR-ANON-KEY"; // atau service key (jangan commit kalau public!)
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-function editProduct(id, name, price, image, description) {
-  document.getElementById("product-id").value = id;
-  document.getElementById("product-name").value = name;
-  document.getElementById("product-price").value = price;
-  document.getElementById("product-image").value = image;
-  document.getElementById("product-description").value = description;
-}
+// === ELEMENT ===
+const productList = document.getElementById("product-list");
+const orderList = document.getElementById("order-list");
+const addProductForm = document.getElementById("add-product-form");
 
-async function saveProduct() {
-  const id = document.getElementById("product-id").value;
-  const name = document.getElementById("product-name").value;
-  const price = parseFloat(document.getElementById("product-price").value);
-  const image = document.getElementById("product-image").value;
-  const description = document.getElementById("product-description").value;
-  if (!name || !price || !image) { alert("Lengkapi form"); return; }
+// ============ PRODUK ==============
 
-  if (id) {
-    const { error } = await supabase.from("products").update({ name, price, image, description }).eq("id", id);
-    if (error) console.error(error);
-  } else {
-    const { error } = await supabase.from("products").insert([{ name, price, image, description }]);
-    if (error) console.error(error);
+// Muat semua produk
+async function loadProducts() {
+  productList.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
+  const { data, error } = await supabase.from("products").select("*").order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("Gagal muat produk:", error);
+    productList.innerHTML = "<tr><td colspan='5'>Gagal memuat produk</td></tr>";
+    return;
   }
-  clearForm(); loadAdminProducts();
+
+  if (!data || data.length === 0) {
+    productList.innerHTML = "<tr><td colspan='5'>Belum ada produk</td></tr>";
+    return;
+  }
+
+  productList.innerHTML = "";
+  data.forEach((prod) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><img src="${prod.image}" alt="${prod.name}" width="50"></td>
+      <td>${prod.name}</td>
+      <td>Rp ${prod.price}</td>
+      <td>${prod.description || "-"}</td>
+      <td>
+        <button onclick="editProduct('${prod.id}')">Edit</button>
+        <button onclick="deleteProduct('${prod.id}')">Hapus</button>
+      </td>
+    `;
+    productList.appendChild(tr);
+  });
 }
 
-function clearForm() {
-  document.getElementById("product-id").value = "";
-  document.getElementById("product-name").value = "";
-  document.getElementById("product-price").value = "";
-  document.getElementById("product-image").value = "";
-  document.getElementById("product-description").value = "";
-}
+// Tambah produk
+addProductForm?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const name = e.target.name.value.trim();
+  const price = parseFloat(e.target.price.value);
+  const image = e.target.image.value.trim();
+  const description = e.target.description.value.trim();
 
+  const { data, error } = await supabase
+    .from("products")
+    .insert([{ name, price, image, description }])
+    .select();
+
+  if (error) {
+    alert("Gagal tambah produk!");
+    console.error(error);
+  } else {
+    alert("Produk berhasil ditambahkan");
+    addProductForm.reset();
+    loadProducts();
+  }
+});
+
+// Hapus produk
 async function deleteProduct(id) {
-  if (!confirm("Hapus produk?")) return;
+  if (!confirm("Yakin hapus produk?")) return;
   const { error } = await supabase.from("products").delete().eq("id", id);
-  if (error) console.error(error);
-  loadAdminProducts();
+  if (error) {
+    alert("Gagal hapus produk");
+    console.error(error);
+  } else {
+    loadProducts();
+  }
 }
 
+// Edit produk (contoh sederhana prompt)
+async function editProduct(id) {
+  const { data, error } = await supabase.from("products").select("*").eq("id", id).single();
+  if (error || !data) {
+    alert("Produk tidak ditemukan");
+    return;
+  }
+  const newName = prompt("Nama produk:", data.name);
+  const newPrice = parseFloat(prompt("Harga:", data.price));
+  const newImage = prompt("URL gambar:", data.image);
+  const newDesc = prompt("Deskripsi:", data.description);
+
+  const { error: updateError } = await supabase
+    .from("products")
+    .update({ name: newName, price: newPrice, image: newImage, description: newDesc })
+    .eq("id", id);
+
+  if (updateError) {
+    alert("Gagal update produk");
+    console.error(updateError);
+  } else {
+    loadProducts();
+  }
+}
+
+// ============ PESANAN ==============
+
+// Muat semua pesanan
 async function loadOrders() {
+  orderList.innerHTML = "<tr><td colspan='6'>Loading...</td></tr>";
   const { data, error } = await supabase
     .from("orders")
     .select("*, products(name)")
     .order("created_at", { ascending: false });
-  if (error) { console.error(error); return; }
-  document.getElementById("admin-orders").innerHTML = data.map(o => `
-    <tr>
-      <td>${o.username}</td>
-      <td>${o.phone}</td>
-      <td>${o.products?.name || o.product}</td>
-      <td>${o.status}</td>
-      <td class="admin-actions">
-        <button class="done" onclick="updateOrder('${o.id}','done')">Done</button>
-        <button class="cancel" onclick="updateOrder('${o.id}','canceled')">Batal</button>
+
+  if (error) {
+    console.error("Gagal muat pesanan:", error);
+    orderList.innerHTML = "<tr><td colspan='6'>Gagal memuat pesanan</td></tr>";
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    orderList.innerHTML = "<tr><td colspan='6'>Belum ada pesanan</td></tr>";
+    return;
+  }
+
+  orderList.innerHTML = "";
+  data.forEach((order) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${order.username}</td>
+      <td>${order.phone}</td>
+      <td>${order.products?.name || "-"}</td>
+      <td>${order.status}</td>
+      <td>${new Date(order.created_at).toLocaleString()}</td>
+      <td>
+        <button onclick="updateStatus('${order.id}', 'done')">Done</button>
+        <button onclick="updateStatus('${order.id}', 'canceled')">Batal</button>
       </td>
-    </tr>`).join("");
+    `;
+    orderList.appendChild(tr);
+  });
 }
 
-async function updateOrder(id, status) {
-  const { error } = await supabase.from("orders").update({ status }).eq("id", id);
-  if (error) console.error(error);
-  loadOrders();
+// Update status pesanan
+async function updateStatus(orderId, newStatus) {
+  const { error } = await supabase.from("orders").update({ status: newStatus }).eq("id", orderId);
+  if (error) {
+    alert("Gagal update status");
+    console.error(error);
+  } else {
+    loadOrders();
+  }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  loadAdminProducts();
-  loadOrders();
-});
+// ============ INIT ==============
+window.editProduct = editProduct;
+window.deleteProduct = deleteProduct;
+window.updateStatus = updateStatus;
+
+loadProducts();
+loadOrders();
