@@ -5,255 +5,53 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Admin — STORESKULLHOST</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="app.js" defer></script>
+  <script>
+    // Pastikan sudah login admin
+    if (localStorage.getItem('store_is_admin') !== '1') {
+      window.location.href = 'login-admin.html';
+    }
+  </script>
 </head>
 <body>
   <header class="navbar admin">
     <div class="brand">STORESKULLHOST — Admin</div>
     <nav>
       <a href="index.html" target="_blank">Lihat Store</a>
-      <a id="link-products">Kelola Produk</a>
-      <a id="link-orders">Kelola Pesanan</a>
-      <a id="admin-logout" class="danger" style="display:none">Logout</a>
+      <a id="admin-logout" class="danger">Logout</a>
     </nav>
   </header>
 
   <main class="container admin-container">
-    <div id="login-panel" class="panel">
-      <h2>Login Admin</h2>
-      <label>Password</label>
-      <input id="admin-password" type="password" placeholder="Masukkan password admin" />
-      <div style="margin-top:10px">
-        <button id="admin-login" class="btn primary">Login</button>
-        <a>Khusus Admin Hanya Admin Yang Bisa Akses</a>
-      </div>
-    </div>
+    <section class="panel">
+      <h2>Tambah / Edit Produk</h2>
+      <form id="product-form" class="product-form">
+        <input id="p-id" type="hidden" />
+        <label>Nama</label>
+        <input id="p-name" placeholder="Nama produk" required />
+        <label>Harga (angka)</label>
+        <input id="p-price" placeholder="10000" type="number" required />
+        <label>Gambar (path atau URL)</label>
+        <input id="p-image" placeholder="/img/produk1.jpg atau https://..." />
+        <label>Deskripsi</label>
+        <textarea id="p-desc" rows="3"></textarea>
+        <div class="form-actions">
+          <button type="submit" class="btn primary">Simpan / Update</button>
+          <button type="button" id="reset-product" class="btn secondary">Reset</button>
+        </div>
+      </form>
 
-    <div id="admin-app" style="display:none">
-      <section id="products-panel" class="panel">
-        <h2>Kelola Produk</h2>
-        <form id="product-form" class="product-form">
-          <input id="p-id" type="hidden" />
-          <label>Judul</label>
-          <input id="p-title" placeholder="Nama produk" />
-          <label>Harga (angka)</label>
-          <input id="p-price" placeholder="10000" type="number" />
-          <label>Gambar (URL)</label>
-          <input id="p-image" placeholder="https://..." />
-          <label>Deskripsi</label>
-          <textarea id="p-desc" rows="3"></textarea>
-          <div class="form-actions">
-            <button type="button" id="save-product" class="btn primary">Simpan / Update</button>
-            <button type="button" id="reset-product" class="btn secondary">Reset</button>
-          </div>
-        </form>
+      <h3>Daftar Produk</h3>
+      <div id="admin-products-list"></div>
+    </section>
 
-        <h3>Daftar Produk</h3>
-        <div id="admin-products-list"></div>
-      </section>
-
-      <section id="orders-panel" class="panel" style="display:none">
-        <h2>Kelola Pesanan</h2>
-        <div id="admin-orders-list"></div>
-      </section>
-    </div>
+    <section class="panel">
+      <h2>Kelola Pesanan</h2>
+      <div id="admin-orders-list"></div>
+    </section>
   </main>
 
-  <footer class="footer">
-    <div>©2025 SKULLHOSTING — STORESKULLHOST</div>
-  </footer>
-
-  <script src="store.js"></script>
-  <script>
-    /* --- ADMIN LOGIC --- */
-    const loginPanel = document.getElementById('login-panel');
-    const adminApp = document.getElementById('admin-app');
-    const adminLogout = document.getElementById('admin-logout');
-
-    // default admin password
-    if(!localStorage.getItem('store_admin_password')) {
-      localStorage.setItem('store_admin_password', 'admin123');
-    }
-
-    function isAdminLogged(){
-      return sessionStorage.getItem('store_admin_logged') === '1';
-    }
-    function setAdminLogged(v){ sessionStorage.setItem('store_admin_logged', v ? '1' : '0'); }
-
-    // login
-    document.getElementById('admin-login').addEventListener('click', ()=>{
-      const pw = document.getElementById('admin-password').value;
-      const stored = localStorage.getItem('store_admin_password');
-      if(pw === stored){
-        setAdminLogged(true);
-        initAdmin();
-      } else alert('Password salah.');
-    });
-
-    adminLogout.addEventListener('click', ()=>{
-      setAdminLogged(false);
-      location.reload();
-    });
-
-    function initAdmin(){
-      if(!isAdminLogged()){
-        loginPanel.style.display = 'block';
-        adminApp.style.display = 'none';
-        adminLogout.style.display = 'none';
-        return;
-      }
-      loginPanel.style.display = 'none';
-      adminApp.style.display = 'block';
-      adminLogout.style.display = 'inline-block';
-      renderAdminProducts();
-      showProductsPanel();
-      renderOrders();
-    }
-
-    // nav
-    document.getElementById('link-products').addEventListener('click', showProductsPanel);
-    document.getElementById('link-orders').addEventListener('click', showOrdersPanel);
-
-    function showProductsPanel(){
-      document.getElementById('products-panel').style.display = 'block';
-      document.getElementById('orders-panel').style.display = 'none';
-    }
-    function showOrdersPanel(){
-      document.getElementById('products-panel').style.display = 'none';
-      document.getElementById('orders-panel').style.display = 'block';
-    }
-
-    // product form
-    const pId = document.getElementById('p-id');
-    const pTitle = document.getElementById('p-title');
-    const pPrice = document.getElementById('p-price');
-    const pImage = document.getElementById('p-image');
-    const pDesc = document.getElementById('p-desc');
-
-    document.getElementById('save-product').addEventListener('click', ()=>{
-      const id = pId.value || null;
-      const data = {
-        title: pTitle.value.trim(),
-        price: parseInt(pPrice.value) || 0,
-        image: pImage.value.trim(),
-        description: pDesc.value.trim()
-      };
-      if(!data.title){ alert('Judul wajib diisi'); return; }
-      if(id){
-        Store.updateProduct(id, data);
-      } else {
-        Store.addProduct(data);
-      }
-      resetForm();
-      renderAdminProducts();
-    });
-
-    document.getElementById('reset-product').addEventListener('click', resetForm);
-
-    function resetForm(){
-      pId.value=''; pTitle.value=''; pPrice.value=''; pImage.value=''; pDesc.value='';
-    }
-
-    // admin products list
-    function renderAdminProducts(){
-      const list = document.getElementById('admin-products-list');
-      list.innerHTML = '';
-      const products = Store.getProducts();
-      if(products.length===0) list.innerHTML = '<div class="empty">Belum ada produk.</div>';
-      products.forEach(p=>{
-        const el = document.createElement('div');
-        el.className = 'admin-product';
-        el.innerHTML = `
-          <div class="admin-product-left">
-            <div class="mini-img" style="background-image:url('${p.image || 'https://via.placeholder.com/80'}')"></div>
-            <div>
-              <strong>${p.title}</strong>
-              <div class="muted">Rp ${numberWithCommas(p.price)}</div>
-            </div>
-          </div>
-          <div class="admin-product-actions">
-            <button class="btn" data-edit="${p.id}">Edit</button>
-            <button class="btn danger" data-delete="${p.id}">Hapus</button>
-          </div>
-        `;
-        list.appendChild(el);
-      });
-
-      // events
-      list.querySelectorAll('[data-edit]').forEach(b=>{
-        b.addEventListener('click', e=>{
-          const id = e.currentTarget.dataset.edit;
-          const p = Store.getProduct(id);
-          pId.value = p.id;
-          pTitle.value = p.title;
-          pPrice.value = p.price;
-          pImage.value = p.image;
-          pDesc.value = p.description;
-          window.scrollTo({top:0, behavior:'smooth'});
-        });
-      });
-      list.querySelectorAll('[data-delete]').forEach(b=>{
-        b.addEventListener('click', e=>{
-          const id = e.currentTarget.dataset.delete;
-          if(confirm('Hapus produk ini?')) {
-            Store.deleteProduct(id);
-            renderAdminProducts();
-          }
-        });
-      });
-    }
-
-    // orders
-    function renderOrders(){
-      const list = document.getElementById('admin-orders-list');
-      list.innerHTML = '';
-      const orders = Store.getOrders().sort((a,b)=>b.createdAt - a.createdAt);
-      if(orders.length === 0) list.innerHTML = '<div class="empty">Belum ada pesanan.</div>';
-      orders.forEach(o=>{
-        const p = Store.getProduct(o.productId) || {title:'(produk dihapus)'};
-        const el = document.createElement('div');
-        el.className = 'order-item';
-        el.innerHTML = `
-          <div class="order-left">
-            <div><strong>${p.title}</strong> <span class="muted">x${o.qty || 1}</span></div>
-            <div class="muted">Nama: ${o.username} • WA: ${o.phone}</div>
-            <div class="muted">Tanggal: ${new Date(o.createdAt).toLocaleString()}</div>
-            <div>Status: <span class="status ${o.status}">${o.status}</span></div>
-          </div>
-          <div class="order-actions">
-            <button class="btn success" data-done="${o.id}">Done</button>
-            <button class="btn warning" data-cancel="${o.id}">Batal</button>
-          </div>
-        `;
-        list.appendChild(el);
-      });
-
-      // attach
-      document.querySelectorAll('[data-done]').forEach(b=>{
-        b.addEventListener('click', e=>{
-          const id = e.currentTarget.dataset.done;
-          Store.updateOrderStatus(id,'done');
-          renderOrders();
-        });
-      });
-      document.querySelectorAll('[data-cancel]').forEach(b=>{
-        b.addEventListener('click', e=>{
-          const id = e.currentTarget.dataset.cancel;
-          Store.updateOrderStatus(id,'canceled');
-          renderOrders();
-        });
-      });
-    }
-
-    // storage event to update orders realtime
-    window.addEventListener('storage', e=>{
-      if(e.key && e.key === 'store_orders') renderOrders();
-    });
-
-    // small helpers
-    function numberWithCommas(x){ return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
-
-    // init if already logged
-    initAdmin();
-  </script>
+  <footer class="footer">©2025 SKULLHOSTING — STORESKULLHOST</footer>
 </body>
 </html>
