@@ -1,165 +1,106 @@
-/* ========== RESET & BASE ========== */
+/* ===== RESET & GLOBAL ===== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 body {
-  font-family: 'Segoe UI', Arial, sans-serif;
-  line-height: 1.6;
-  background: #f6f6f6;
-  color: #222;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  font-family: Arial, sans-serif;
+  background: #f9f9f9;
+  color: #333;
+  line-height: 1.5;
 }
+a { color: inherit; text-decoration: none; }
 
-/* ========== NAVBAR ========== */
-nav {
-  position: sticky;
-  top: 0;
-  background: linear-gradient(90deg, #111, #444);
-  padding: 0.75rem 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  z-index: 99;
-}
-nav h1 {
+/* ===== NAVBAR ===== */
+.navbar {
+  background: #222;
   color: #fff;
-  font-size: 1.3rem;
+  padding: 0.8rem 1.2rem;
+  font-size: 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.navbar h1 {
+  font-size: 1.4rem;
   letter-spacing: 1px;
 }
-nav a {
-  color: #ddd;
+.navbar a {
+  color: #fff;
   margin-left: 1rem;
-  text-decoration: none;
-  font-size: 0.95rem;
+  font-weight: 500;
   transition: color 0.3s;
 }
-nav a:hover, nav a.active {
-  color: #00e676; /* aksen hijau */
-}
+.navbar a:hover { color: #00e676; }
 
-/* ========== MAIN ========== */
-main {
-  flex: 1;
-  width: 90%;
-  max-width: 1200px;
-  margin: 1.5rem auto;
+/* ===== LAYOUT ===== */
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 1rem;
 }
-
-/* ========== GRID PRODUK ========== */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.2rem;
-}
-.grid div {
+.card {
   background: #fff;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-  display: flex;
-  flex-direction: column;
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
-.grid div:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+.card h2 {
+  margin-top: 0;
+  font-size: 1.3rem;
+  margin-bottom: 0.6rem;
 }
-.grid div img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-}
-.grid div h3 {
-  margin: 0.5rem 0 0.25rem;
-  padding: 0 0.75rem;
-  font-size: 1rem;
-}
-.grid div p {
-  padding: 0 0.75rem;
-  font-size: 0.9rem;
-  color: #555;
-}
-.grid div button {
-  margin: 0.75rem;
-  padding: 0.5rem 0.75rem;
-  background: #00e676;
-  border: none;
-  color: #fff;
-  font-size: 0.9rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.grid div button:hover {
-  background: #00c853;
-}
-
-/* ========== FORM (CART & ADMIN) ========== */
-input, textarea {
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  margin: 0.4rem 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 0.9rem;
-}
-button {
-  background: #111;
-  color: #fff;
-  padding: 0.6rem 1rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-button:hover {
-  background: #333;
-}
-
-/* ========== ORDERS / HISTORY ========== */
-#order-history div, #admin-orders div {
-  background: #fff;
-  margin: 0.4rem 0;
-  padding: 0.6rem 0.75rem;
-  border-left: 4px solid #00e676;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-/* ========== FOOTER ========== */
-footer {
+.footer {
   text-align: center;
-  padding: 1rem 0;
-  background: #111;
-  color: #aaa;
-  font-size: 0.85rem;
+  padding: 1rem;
+  margin-top: 1rem;
+  color: #666;
 }
 
-/* ========== RESPONSIVE NAV ========== */
-@media (max-width: 600px) {
-  nav h1 { font-size: 1rem; }
-  nav a { margin-left: 0.6rem; font-size: 0.85rem; }
-  .grid div img { height: 140px; }
+/* ===== FORM ===== */
+form input,
+form textarea {
+  width: 100%;
+  margin: 0.4rem 0;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+form textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+form button {
+  padding: 0.5rem 1rem;
+  background: #333;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.3s;
+}
+form button:hover {
+  background: #555;
 }
 
-/* ====== ADMIN ====== */
+/* ===== GRID & CARD WRAPPERS ===== */
 #admin-products, #admin-orders {
   display: grid;
   gap: 1rem;
   margin-top: 1rem;
 }
 
-/* CARD PRODUK */
+/* ===== CARD PRODUK ===== */
 .product-card {
   display: flex;
   align-items: center;
-  background: #fff;
   padding: 0.75rem;
   border: 1px solid #ddd;
   border-radius: 6px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 .product-card img {
   width: 80px;
@@ -168,38 +109,59 @@ footer {
   border-radius: 4px;
   margin-right: 1rem;
 }
-.product-card h4 { margin: 0 0 4px; }
+.product-card .product-info { flex: 1; }
+.product-card h4 { margin: 0 0 4px; font-size: 1.1rem; }
+.product-card p { margin: 0 0 6px; color: #666; }
 .product-card button {
   margin-right: 0.4rem;
-  background: #333;
-  color: #fff;
-  border: none;
   padding: 0.4rem 0.7rem;
+  border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: background 0.2s;
+  background: #333;
+  color: #fff;
+  transition: background 0.3s;
 }
 .product-card button:hover { background: #555; }
 
-/* CARD PESANAN */
+/* ===== CARD PESANAN ===== */
 .order-card {
-  background: #fff;
   padding: 0.75rem;
   border: 1px solid #ddd;
   border-radius: 6px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
-.order-card h4 { margin: 0 0 4px; }
+.order-card h4 { margin: 0 0 4px; font-size: 1.1rem; }
+.order-card p { margin: 2px 0; color: #555; }
+.order-card strong { color: #000; }
 .order-card button {
+  margin-top: 0.5rem;
   margin-right: 0.4rem;
-  background: #00e676;
-  color: #fff;
-  border: none;
   padding: 0.4rem 0.7rem;
+  border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: background 0.2s;
+  font-weight: 500;
+  transition: opacity 0.3s;
 }
-.order-card button:nth-child(2) { background: #f44336; }
-.order-card button:hover { opacity: 0.9; }
+.order-card button:first-of-type {
+  background: #00c853;
+  color: #fff;
+}
+.order-card button:last-of-type {
+  background: #d32f2f;
+  color: #fff;
+}
+.order-card button:hover { opacity: 0.85; }
 
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .product-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  .product-card img {
+    margin: 0 0 0.5rem 0;
+  }
+}
