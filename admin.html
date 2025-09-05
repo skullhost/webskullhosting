@@ -1,46 +1,63 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin - STORESKULLHOST</title>
-  <link rel="stylesheet" href="css/style.css"/>
+  <meta charset="UTF-8">
+  <title>Admin Panel - STORESKULLHOST</title>
+  <link rel="stylesheet" href="admin.css">
+  <script type="module" src="admin.js" defer></script>
 </head>
 <body>
-  <nav class="navbar">
-    <h1>Admin Panel</h1>
-    <div><a href="admin.html">Dashboard</a></div>
-  </nav>
+  <header>
+    <h1>STORESKULLHOST - Admin Panel</h1>
+  </header>
 
-  <main class="container">
-    <section class="admin-section">
-      <h2>Tambah / Edit Produk</h2>
-      <div class="admin-form">
-        <input type="hidden" id="product-id" />
-        <input type="text" id="product-name" placeholder="Nama Produk"/>
-        <input type="number" id="product-price" placeholder="Harga"/>
-        <input type="text" id="product-image" placeholder="URL Gambar"/>
-        <input type="text" id="product-description" placeholder="Deskripsi"/>
-        <button onclick="saveProduct()">Simpan</button>
-      </div>
-      <table class="admin-table">
-        <thead><tr><th>Nama</th><th>Harga</th><th>Gambar</th><th>Deskripsi</th><th>Aksi</th></tr></thead>
-        <tbody id="admin-products"></tbody>
+  <main>
+    <section class="add-product">
+      <h2>Tambah Produk</h2>
+      <form id="add-product-form">
+        <input type="text" name="name" placeholder="Nama Produk" required>
+        <input type="number" name="price" placeholder="Harga" required>
+        <input type="text" name="image" placeholder="URL Gambar" required>
+        <textarea name="description" placeholder="Deskripsi"></textarea>
+        <button type="submit">Tambah</button>
+      </form>
+    </section>
+
+    <section class="product-list">
+      <h2>Daftar Produk</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Gambar</th>
+            <th>Nama</th>
+            <th>Harga</th>
+            <th>Deskripsi</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="product-list"></tbody>
       </table>
     </section>
 
-    <section class="admin-section">
+    <section class="order-list">
       <h2>Kelola Pesanan</h2>
-      <table class="admin-table">
-        <thead><tr><th>Username</th><th>Phone</th><th>Produk</th><th>Status</th><th>Aksi</th></tr></thead>
-        <tbody id="admin-orders"></tbody>
+      <table>
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Nomor HP</th>
+            <th>ID Produk</th>
+            <th>Status</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="order-list"></tbody>
       </table>
     </section>
   </main>
 
-  <footer class="footer">&copy; 2025 STORESKULLHOST</footer>
-
-  <script src="https://unpkg.com/@supabase/supabase-js"></script>
-  <script src="js/admin.js"></script>
+  <footer>
+    &copy; 2025 STORESKULLHOST
+  </footer>
 </body>
 </html>
