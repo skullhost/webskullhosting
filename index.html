@@ -1,66 +1,25 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>STORESKULLHOST — Beranda</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <meta charset="UTF-8">
+  <title>StoreSkullHost</title>
+  <link rel="stylesheet" href="css/style.css">
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <script src="app.js" defer></script>
+  <script defer src="js/app.js"></script>
 </head>
 <body>
-  <header class="navbar">
-    <div class="brand">STORESKULLHOST</div>
-    <nav>
-      <a href="#" id="nav-products">Beranda</a>
-      <a href="#" id="nav-cart">Keranjang (<span id="cart-count">0</span>)</a>
-      <a href="#" id="nav-history">History</a>
-      <a href="login_admin.html" class="admin-link">Admin</a>
-    </nav>
-  </header>
+  <nav>
+    <h1>StoreSkullHost</h1>
+    <a href="index.html">Beranda</a>
+    <a href="cart.html">Keranjang</a>
+    <a href="history.html">History</a>
+  </nav>
 
-  <main class="container">
-    <!-- PRODUCTS -->
-    <section id="page-products" class="page">
-      <h1>Semua Produk</h1>
-      <div id="products" class="products-grid"></div>
-    </section>
-
-    <!-- CART -->
-    <section id="page-cart" class="page" style="display:none">
-      <h1>Keranjang</h1>
-      <div id="cart-list"></div>
-      <div class="cart-actions">
-        <button id="btn-clear-cart" class="btn secondary">Kosongkan Keranjang</button>
-        <button id="btn-checkout" class="btn primary">Checkout</button>
-      </div>
-    </section>
-
-    <!-- HISTORY -->
-    <section id="page-history" class="page" style="display:none">
-      <h1>History Pesanan</h1>
-      <div id="history-list"></div>
-      <small class="muted">History disaring berdasarkan username & nomor WA yang terakhir digunakan saat pembelian.</small>
-    </section>
+  <main>
+    <h2>Semua Produk</h2>
+    <div id="product-list" class="grid"></div>
   </main>
 
-  <footer class="footer">
-    <div>©2025 SKULLHOSTING — STORESKULLHOST</div>
-  </footer>
-
-  <!-- Modal (Buy / Checkout) -->
-  <div id="modal" class="modal" style="display:none">
-    <div class="modal-content">
-      <h3 id="modal-title">Informasi Pembeli</h3>
-      <label>Username</label>
-      <input id="modal-username" placeholder="Nama / username" />
-      <label>Nomor WhatsApp</label>
-      <input id="modal-phone" placeholder="62xxxxxxxxxx" />
-      <div class="modal-actions">
-        <button id="modal-cancel" class="btn secondary">Batal</button>
-        <button id="modal-submit" class="btn primary">Selesai</button>
-      </div>
-    </div>
-  </div>
+  <footer>@2025 SKULLHOSTING</footer>
 </body>
 </html>
