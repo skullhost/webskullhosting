@@ -1,25 +1,56 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>History | StoreSkullHost</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <script defer src="js/app.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>History - STORESKULLHOST</title>
+  <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
-  <nav>
-    <h1>StoreSkullHost</h1>
-    <a href="index.html">Beranda</a>
-    <a href="cart.html">Keranjang</a>
-    <a href="history.html" class="active">History</a>
+  <nav class="navbar">
+    <h1>STORESKULLHOST</h1>
+    <div>
+      <a href="index.html">Beranda</a>
+      <a href="cart.html">Keranjang</a>
+      <a href="history.html">History</a>
+    </div>
   </nav>
 
-  <main>
+  <main class="container">
     <h2>Riwayat Pesanan</h2>
-    <div id="order-history"></div>
+    <div id="history-box"></div>
   </main>
 
-  <footer>@2025 SKULLHOSTING</footer>
+  <footer class="footer">&copy; 2025 STORESKULLHOST</footer>
+
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
+  <script>
+    const SUPABASE_URL = "https://zvqlsgwccrdqjgcxgmzq.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2cWxzZ3djY3JkcWpnY3hnbXpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwNTc0MDUsImV4cCI6MjA3MjYzMzQwNX0.6Ge1ON_x9Ce-l4tFRtH_Ks9o3v1RouLIDejtbohjo4Y";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function loadHistory() {
+      const box = document.getElementById("history-box");
+      const { data, error } = await supabase.from("orders").select("*, products(name)").order("created_at", { ascending: false });
+      if (error) {
+        console.error(error);
+        box.innerHTML = "<p>Gagal memuat history.</p>";
+        return;
+      }
+      if (!data || data.length === 0) {
+        box.innerHTML = "<p>Tidak ada pesanan.</p>";
+        return;
+      }
+      box.innerHTML = data.map(o => `
+        <div class="product-card" style="flex-direction:row;align-items:center;">
+          <div style="flex:1;padding:0.5rem;">
+            <h4>${o.products?.name || "Produk"}</h4>
+            <p>Status: ${o.status}</p>
+          </div>
+        </div>`).join("");
+    }
+
+    document.addEventListener("DOMContentLoaded", loadHistory);
+  </script>
 </body>
 </html>
