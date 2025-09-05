@@ -1,9 +1,9 @@
+// admin.js
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-// ganti URL dan KEY sesuai project kamu
-const SUPABASE_URL = "https://zvqlsgwccrdqjgcxgmzq.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2cWxzZ3djY3JkcWpnY3hnbXpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwNTc0MDUsImV4cCI6MjA3MjYzMzQwNX0.6Ge1ON_x9Ce-l4tFRtH_Ks9o3v1RouLIDejtbohjo4Y";
-
+// === GANTI DENGAN PUNYA KAMU SENDIRI ===
+const SUPABASE_URL = "https://YOUR-PROJECT.supabase.co";
+const SUPABASE_KEY = "YOUR-ANON-KEY";
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // DOM element
@@ -11,17 +11,22 @@ const productList = document.getElementById("product-list");
 const orderList   = document.getElementById("order-list");
 const addForm     = document.getElementById("add-product-form");
 
-// debug
+// Debug supaya tahu elemen ketemu
 console.log("productList element:", productList);
 console.log("orderList element:", orderList);
 
+// === PRODUK ===
 async function loadProducts() {
   const { data, error } = await supabase.from("products").select("*");
   console.log("Products:", data, error);
-  if (error) return;
+
+  if (error) {
+    alert("Gagal memuat produk: " + error.message);
+    return;
+  }
 
   productList.innerHTML = "";
-  data.forEach(prod => {
+  data.forEach((prod) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td><img src="${prod.image}" alt="${prod.name}" style="width:60px"></td>
@@ -36,13 +41,18 @@ async function loadProducts() {
   });
 }
 
+// === PESANAN ===
 async function loadOrders() {
   const { data, error } = await supabase.from("orders").select("*");
   console.log("Orders:", data, error);
-  if (error) return;
+
+  if (error) {
+    alert("Gagal memuat pesanan: " + error.message);
+    return;
+  }
 
   orderList.innerHTML = "";
-  data.forEach(ord => {
+  data.forEach((ord) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${ord.username}</td>
@@ -58,6 +68,7 @@ async function loadOrders() {
   });
 }
 
+// === FORM TAMBAH PRODUK ===
 addForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const name = document.getElementById("product-name").value;
@@ -68,28 +79,47 @@ addForm.addEventListener("submit", async (e) => {
   const { error } = await supabase.from("products").insert([{ name, price, image, description }]);
   if (error) {
     console.error("Tambah produk gagal:", error);
+    alert("Gagal tambah produk: " + error.message);
   } else {
     addForm.reset();
     loadProducts();
   }
 });
 
+// === AKSI PRODUK ===
 window.deleteProduct = async (id) => {
   const { error } = await supabase.from("products").delete().eq("id", id);
-  if (error) console.error("Gagal hapus:", error);
-  else loadProducts();
+  if (error) {
+    console.error("Gagal hapus:", error);
+    alert("Gagal hapus produk: " + error.message);
+  } else {
+    loadProducts();
+  }
 };
 
-window.updateStatus = async (id, status) => {
-  const { error } = await supabase.from("orders").update({ status }).eq("id", id);
-  if (error) console.error("Gagal update:", error);
-  else loadOrders();
+// === UPDATE STATUS PESANAN ===
+window.updateStatus = async (id, newStatus) => {
+  const { data, error } = await supabase
+    .from("orders")
+    .update({ status: newStatus })
+    .eq("id", id)
+    .select();
+
+  if (error) {
+    console.error("Gagal update status:", error);
+    alert("Gagal update status: " + error.message);
+  } else {
+    console.log("Update sukses:", data);
+    loadOrders();
+  }
 };
 
+// === SWITCH HALAMAN (Produk / Pesanan) ===
 window.showSection = (section) => {
   document.getElementById("products-section").style.display = section === "products" ? "block" : "none";
   document.getElementById("orders-section").style.display = section === "orders" ? "block" : "none";
 };
 
+// === INISIALISASI ===
 loadProducts();
 loadOrders();
