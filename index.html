@@ -1,25 +1,33 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>StoreSkullHost</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <script defer src="js/app.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>STORESKULLHOST</title>
+  <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
-  <nav>
-    <h1>StoreSkullHost</h1>
-    <a href="index.html">Beranda</a>
-    <a href="cart.html">Keranjang</a>
-    <a href="history.html">History</a>
+  <nav class="navbar">
+    <h1>STORESKULLHOST</h1>
+    <div>
+      <a href="index.html">Beranda</a>
+      <a href="cart.html">Keranjang</a>
+      <a href="history.html">History</a>
+    </div>
   </nav>
 
-  <main>
-    <h2>Semua Produk</h2>
-    <div id="product-list" class="grid"></div>
+  <main class="container">
+    <section class="card">
+      <h2>Semua Produk</h2>
+      <div id="user-products"></div>
+    </section>
   </main>
 
-  <footer>@2025 SKULLHOSTING</footer>
+  <footer class="footer">
+    &copy; 2025 STORESKULLHOST
+  </footer>
+
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
+  <script src="js/user.js"></script>
 </body>
 </html>
